@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main, master, "claude/epic-dijkstra-Ibpuw"]
+    branches: [main, master, "claude/epic-dijkstra-Ibpuw", "claude/charming-galileo-NIRLM"]
   workflow_dispatch:
 
 permissions:

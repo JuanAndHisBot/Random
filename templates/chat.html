@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat Corrector · Tutor de Idiomas</title>
+<meta name="description" content="Practica idiomas con corrección automática estilo papel">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1410;
+    --cream: #f5f0e8;
+    --parchment: #ede5d0;
+    --gold: #c8922a;
+    --gold-light: #e8b84b;
+    --muted: #7a6e5f;
+    --border: #d4c8b0;
+    --card-bg: #faf7f1;
+    --accent-warm: #8b3a2a;
+    --err-red: #c0392b;
+    --ok-green: #2e7d32;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 2rem 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(-45deg, transparent, transparent 20px, rgba(200,146,42,0.04) 20px, rgba(200,146,42,0.04) 21px);
+  }
+  .flag-stripe { display: flex; justify-content: center; gap: 0; margin-bottom: 1rem; }
+  .flag-stripe span { width: 24px; height: 5px; border-radius: 1px; }
+  .flag-stripe .bl { background: #002395; }
+  .flag-stripe .wh { background: #fff; }
+  .flag-stripe .rd { background: #ED2939; }
+  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(1.6rem, 5vw, 2.8rem); font-weight: 700; letter-spacing: 0.02em; line-height: 1.1; position: relative; }
+  header h1 em { color: var(--gold-light); font-style: italic; }
+  header p.subtitle { margin-top: 0.5rem; font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(245,240,232,0.5); position: relative; }
+
+  /* ─── NAV ─── */
+  nav {
+    background: var(--parchment);
+    border-bottom: 1px solid var(--border);
+    padding: 0.6rem 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(26,20,16,0.06);
+  }
+  nav a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.25rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    transition: all 0.2s;
+    background: var(--card-bg);
+  }
+  nav a:hover, nav a.active { border-color: var(--gold); color: var(--gold); }
+  .change-key-btn {
+    margin-left: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.25rem 0.55rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .change-key-btn:hover { border-color: var(--err-red); color: var(--err-red); }
+
+  /* ─── KEY SETUP ─── */
+  .key-setup {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+  .key-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 480px;
+    width: 100%;
+  }
+  .key-card h2 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.5rem; }
+  .key-card p { font-size: 0.84rem; color: var(--muted); margin-bottom: 1.25rem; line-height: 1.6; }
+  .key-note { font-size: 0.75rem !important; color: var(--muted) !important; margin-top: 0.75rem !important; margin-bottom: 0 !important; }
+  .key-input-row { display: flex; gap: 0.6rem; }
+  .key-input {
+    flex: 1;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.65rem 0.9rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    outline: none;
+    color: var(--ink);
+    min-width: 0;
+  }
+  .key-input:focus { border-color: var(--gold); }
+  .key-btn {
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    border-radius: 6px;
+    padding: 0.65rem 1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .key-btn:hover { background: var(--accent-warm); }
+
+  /* ─── CHAT SECTION ─── */
+  #chat-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .messages-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    scroll-behavior: smooth;
+  }
+
+  /* Center content */
+  .turn, .correction-card, .all-good, .msg-error, .empty-state {
+    max-width: 760px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ─── TURNS ─── */
+  .turn { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .msg-user {
+    align-self: flex-end;
+    max-width: 72%;
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.75rem 1.05rem;
+    border-radius: 14px 14px 3px 14px;
+    font-size: 0.93rem;
+    line-height: 1.55;
+    word-break: break-word;
+  }
+
+  .msg-tutor {
+    align-self: flex-start;
+    max-width: 72%;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 0.75rem 1.05rem;
+    border-radius: 14px 14px 14px 3px;
+    font-size: 0.91rem;
+    line-height: 1.6;
+    word-break: break-word;
+  }
+
+  .msg-error {
+    align-self: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--err-red);
+    background: rgba(192,57,43,0.07);
+    border: 1px solid rgba(192,57,43,0.2);
+    border-radius: 4px;
+    padding: 0.4rem 0.75rem;
+  }
+
+  /* ─── CORRECTION CARD ─── */
+  .correction-card {
+    background: #fff;
+    border: 1px solid #e8dfd0;
+    border-left: 3px solid var(--err-red);
+    border-radius: 6px;
+    padding: 1rem 1.25rem 0.75rem;
+    box-shadow: 0 1px 4px rgba(26,20,16,0.06);
+  }
+
+  .card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.61rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--err-red);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .lang-badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    background: rgba(200,146,42,0.12);
+    color: var(--gold);
+  }
+
+  /* ─── ANNOTATED TEXT (paper markup) ─── */
+  .annotated-text {
+    font-size: 0.95rem;
+    line-height: 2.5;
+    padding: 0.2rem 0 0.4rem;
+    word-break: break-word;
+  }
+
+  /* The wrapper gives vertical space for the correction written above */
+  .err-wrap {
+    display: inline-block;
+    position: relative;
+    padding-top: 1.4em;
+    margin: 0 1px;
+  }
+
+  /* The correction written above the error — like a teacher's handwriting */
+  .err-fix {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--ok-green);
+    font-weight: 600;
+    font-size: 0.76em;
+    font-family: 'DM Mono', monospace;
+    white-space: nowrap;
+    letter-spacing: 0;
+    border-bottom: 1px solid rgba(46,125,50,0.4);
+    padding-bottom: 1px;
+  }
+
+  /* The wrong word — red wavy underline like a teacher marking */
+  .err-wrong {
+    color: var(--err-red);
+    text-decoration: underline;
+    text-decoration-style: wavy;
+    text-decoration-color: var(--err-red);
+    cursor: help;
+  }
+
+  /* Full corrected sentence at the bottom */
+  .corrected-line {
+    margin-top: 0.6rem;
+    padding-top: 0.65rem;
+    border-top: 1px dashed var(--border);
+    color: var(--ok-green);
+    font-size: 0.88rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+  .corrected-line .check { flex-shrink: 0; }
+
+  /* Explanations */
+  .explain-toggle {
+    display: block;
+    margin-top: 0.5rem;
+    background: none;
+    border: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0.2rem 0;
+    transition: color 0.2s;
+  }
+  .explain-toggle:hover { color: var(--ink); }
+
+  .explanations { display: none; margin-top: 0.4rem; }
+  .explanations.open { display: block; }
+
+  .explain-item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.6rem;
+    align-items: baseline;
+    font-size: 0.78rem;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(212,200,176,0.5);
+  }
+  .explain-item:last-child { border-bottom: none; }
+  .explain-wrong { font-family: 'DM Mono', monospace; font-size: 0.73rem; color: var(--err-red); }
+  .explain-arrow { color: var(--muted); }
+  .explain-right { font-family: 'DM Mono', monospace; font-size: 0.73rem; color: var(--ok-green); }
+  .explain-note { color: var(--muted); flex: 1; min-width: 100px; }
+
+  /* All good badge */
+  .all-good {
+    align-self: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ok-green);
+    padding: 0.3rem 0.7rem;
+    border: 1px solid rgba(46,125,50,0.3);
+    border-radius: 3px;
+    background: rgba(46,125,50,0.05);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ─── EMPTY STATE ─── */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--muted);
+    gap: 1.25rem;
+  }
+  .empty-state p { font-size: 0.88rem; line-height: 1.7; max-width: 380px; }
+  .examples { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+  .example-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.67rem;
+    letter-spacing: 0.05em;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.4rem 0.7rem;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .example-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ─── LOADING DOTS ─── */
+  .loading {
+    align-self: flex-start;
+    display: flex;
+    gap: 4px;
+    padding: 0.85rem 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px 14px 14px 3px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 760px;
+    width: fit-content;
+  }
+  .loading span {
+    width: 6px; height: 6px;
+    background: var(--muted);
+    border-radius: 50%;
+    animation: bounce 0.9s ease-in-out infinite;
+  }
+  .loading span:nth-child(2) { animation-delay: 0.15s; }
+  .loading span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce { 0%,80%,100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
+
+  /* ─── INPUT AREA ─── */
+  .input-row {
+    flex-shrink: 0;
+    background: var(--cream);
+    border-top: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+  }
+  .input-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-end;
+  }
+  #user-input {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.7rem 0.95rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.93rem;
+    line-height: 1.5;
+    resize: none;
+    height: 46px;
+    max-height: 180px;
+    outline: none;
+    transition: border-color 0.2s;
+    color: var(--ink);
+    overflow-y: auto;
+  }
+  #user-input:focus { border-color: var(--gold); }
+  #user-input::placeholder { color: var(--muted); }
+  .send-btn {
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    border-radius: 8px;
+    padding: 0 1.1rem;
+    height: 46px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .send-btn:hover { background: var(--accent-warm); }
+  .send-btn:disabled { opacity: 0.35; cursor: default; background: var(--ink); }
+  .input-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    text-align: right;
+    margin-top: 0.3rem;
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media (max-width: 600px) {
+    .msg-user, .msg-tutor { max-width: 88%; }
+    header { padding: 1.5rem 1rem 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="flag-stripe">
+    <span class="bl"></span><span class="bl"></span><span class="bl"></span>
+    <span class="wh"></span><span class="wh"></span><span class="wh"></span>
+    <span class="rd"></span><span class="rd"></span><span class="rd"></span>
+  </div>
+  <h1>Chat <em>Corrector</em></h1>
+  <p class="subtitle">Practica idiomas · Corrección automática · Detección automática del idioma</p>
+</header>
+
+<nav>
+  <a href="{{ config.base_url }}/">← Guía Française</a>
+  <a href="#" class="active">Chat Corrector</a>
+  <button class="change-key-btn" id="change-key-btn" style="display:none" onclick="resetKey()">Borrar API key</button>
+</nav>
+
+<!-- KEY SETUP -->
+<div id="key-section" class="key-setup">
+  <div class="key-card">
+    <h2>Configurar Anthropic API key</h2>
+    <p>Ingresá tu API key de Anthropic para usar el corrector. Se guarda únicamente en tu navegador (localStorage) — nunca se envía a otro servidor que no sea <code>api.anthropic.com</code>.</p>
+    <div class="key-input-row">
+      <input type="password" id="api-key-input" class="key-input" placeholder="sk-ant-api03-...">
+      <button class="key-btn" onclick="saveKey()">Guardar →</button>
+    </div>
+    <p class="key-note">No tenés una key? Creá una en console.anthropic.com</p>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div id="chat-section" style="display:none">
+  <div class="messages-area" id="messages">
+    <div class="empty-state" id="empty-state">
+      <p>Escribí cualquier texto en el idioma que querés practicar.<br>El tutor te responderá y marcará los errores como un profesor en papel.</p>
+      <div class="examples">
+        <button class="example-btn" onclick="useExample('Je suis alle au cinema hier avec mes amis.')">Francés →</button>
+        <button class="example-btn" onclick="useExample('I goed to the store yesterday and buyed some apple.')">Inglés →</button>
+        <button class="example-btn" onclick="useExample('Yo fui al mercado y compre muchas verdura fresca.')">Español →</button>
+        <button class="example-btn" onclick="useExample('Ich haben gestern ein Buch gelest.')">Alemán →</button>
+      </div>
+    </div>
+  </div>
+  <div class="input-row">
+    <div class="input-inner">
+      <textarea id="user-input" placeholder="Escribí en el idioma que querés practicar... (Enter para enviar, Shift+Enter para nueva línea)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">Enviar →</button>
+    </div>
+    <p class="input-hint">Enter → enviar &nbsp;·&nbsp; Shift+Enter → nueva línea</p>
+  </div>
+</div>
+
+<script>
+{% raw %}
+// ─── SYSTEM PROMPT ───────────────────────────────────────────────────────────
+const SYSTEM_PROMPT = `You are a warm, encouraging language tutor who has natural conversations while identifying writing errors.
+
+For each user message, respond ONLY with a valid JSON object (no markdown, no code fences, no extra text). Use this exact structure:
+
+{
+  "reply": "Your natural conversational response. React to what they said, not just the grammar. Be encouraging. Write in the target language or Spanish if they need clarification.",
+  "detected_language": "Name of the language they wrote in (e.g. French, English, Spanish)",
+  "has_errors": true,
+  "corrections": [
+    {
+      "wrong": "exact substring from user message (copy-paste precise)",
+      "correct": "correct replacement",
+      "type": "spelling|grammar|accent|punctuation|vocabulary",
+      "explanation": "Brief explanation in Spanish (1 short sentence)"
+    }
+  ],
+  "corrected_text": "Full corrected version of the user message"
+}
+
+Rules:
+- "wrong" MUST be an exact substring of the user message (identical characters, same case)
+- Corrections must NOT overlap
+- List corrections in the order they appear in the text
+- If no errors, set has_errors: false, corrections: [], corrected_text same as input
+- Always include corrected_text
+- Keep "reply" warm and conversational — comment on what they said
+- Return ONLY the JSON object`;
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let apiKey = '';
+let conversationHistory = [];
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+function init() {
+  apiKey = localStorage.getItem('chat_corrector_key') || '';
+  if (apiKey) {
+    showChat();
+  } else {
+    showKeySetup();
+  }
+}
+
+function showKeySetup() {
+  document.getElementById('key-section').style.display = 'flex';
+  document.getElementById('chat-section').style.display = 'none';
+  document.getElementById('change-key-btn').style.display = 'none';
+}
+
+function showChat() {
+  document.getElementById('key-section').style.display = 'none';
+  document.getElementById('chat-section').style.display = 'flex';
+  document.getElementById('chat-section').style.flexDirection = 'column';
+  document.getElementById('change-key-btn').style.display = 'block';
+  setTimeout(() => document.getElementById('user-input').focus(), 100);
+}
+
+function saveKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key) return;
+  apiKey = key;
+  localStorage.setItem('chat_corrector_key', key);
+  showChat();
+}
+
+function resetKey() {
+  if (!confirm('¿Borrar la API key guardada?')) return;
+  localStorage.removeItem('chat_corrector_key');
+  apiKey = '';
+  conversationHistory = [];
+  const msgs = document.getElementById('messages');
+  msgs.innerHTML = '';
+  msgs.appendChild(buildEmptyState());
+  showKeySetup();
+}
+
+function buildEmptyState() {
+  const el = document.createElement('div');
+  el.className = 'empty-state';
+  el.id = 'empty-state';
+  el.innerHTML = `
+    <p>Escribí cualquier texto en el idioma que querés practicar.<br>El tutor te responderá y marcará los errores como un profesor en papel.</p>
+    <div class="examples">
+      <button class="example-btn" onclick="useExample('Je suis alle au cinema hier avec mes amis.')">Francés →</button>
+      <button class="example-btn" onclick="useExample('I goed to the store yesterday and buyed some apple.')">Inglés →</button>
+      <button class="example-btn" onclick="useExample('Yo fui al mercado y compre muchas verdura fresca.')">Español →</button>
+      <button class="example-btn" onclick="useExample('Ich haben gestern ein Buch gelest.')">Alemán →</button>
+    </div>`;
+  return el;
+}
+
+function useExample(text) {
+  const input = document.getElementById('user-input');
+  input.value = text;
+  input.dispatchEvent(new Event('input'));
+  input.focus();
+}
+
+// ─── SEND MESSAGE ─────────────────────────────────────────────────────────────
+async function sendMessage() {
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text || !apiKey) return;
+
+  const sendBtn = document.getElementById('send-btn');
+  sendBtn.disabled = true;
+  input.value = '';
+  input.style.height = '46px';
+
+  // Remove empty state
+  const emptyState = document.getElementById('empty-state');
+  if (emptyState) emptyState.remove();
+
+  // Render user message
+  const turn = document.createElement('div');
+  turn.className = 'turn';
+  const userBubble = document.createElement('div');
+  userBubble.className = 'msg-user';
+  userBubble.textContent = text;
+  turn.appendChild(userBubble);
+  document.getElementById('messages').appendChild(turn);
+
+  // Loading indicator
+  const loadingEl = document.createElement('div');
+  loadingEl.className = 'loading';
+  loadingEl.innerHTML = '<span></span><span></span><span></span>';
+  document.getElementById('messages').appendChild(loadingEl);
+  scrollToBottom();
+
+  // Add to conversation history
+  conversationHistory.push({ role: 'user', content: text });
+
+  try {
+    const raw = await callClaude(conversationHistory);
+    loadingEl.remove();
+
+    let parsed;
+    try {
+      // Strip possible markdown fences just in case
+      const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();
+      parsed = JSON.parse(cleaned);
+    } catch (_) {
+      parsed = {
+        reply: raw,
+        detected_language: '',
+        has_errors: false,
+        corrections: [],
+        corrected_text: text
+      };
+    }
+
+    conversationHistory.push({ role: 'assistant', content: parsed.reply || raw });
+
+    renderCorrectionAndReply(turn, text, parsed);
+  } catch (err) {
+    loadingEl.remove();
+    conversationHistory.pop();
+    const errEl = document.createElement('div');
+    errEl.className = 'msg-error';
+    errEl.textContent = 'Error: ' + err.message;
+    document.getElementById('messages').appendChild(errEl);
+  }
+
+  sendBtn.disabled = false;
+  scrollToBottom();
+}
+
+// ─── API CALL ─────────────────────────────────────────────────────────────────
+async function callClaude(messages) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1024,
+      system: SYSTEM_PROMPT,
+      messages: messages
+    })
+  });
+
+  if (!res.ok) {
+    let errMsg = 'API error ' + res.status;
+    try {
+      const errData = await res.json();
+      errMsg = errData.error?.message || errMsg;
+    } catch (_) {}
+    throw new Error(errMsg);
+  }
+
+  const data = await res.json();
+  return data.content[0].text;
+}
+
+// ─── RENDER CORRECTION + REPLY ────────────────────────────────────────────────
+function renderCorrectionAndReply(turn, originalText, parsed) {
+  const msgs = document.getElementById('messages');
+
+  // Correction card
+  if (parsed.has_errors && parsed.corrections && parsed.corrections.length > 0) {
+    const card = document.createElement('div');
+    card.className = 'correction-card';
+
+    // Label
+    const label = document.createElement('div');
+    label.className = 'card-label';
+    const langHtml = parsed.detected_language
+      ? ' <span class="lang-badge">' + escHtml(parsed.detected_language) + '</span>'
+      : '';
+    label.innerHTML = '📝 Corrección' + langHtml;
+    card.appendChild(label);
+
+    // Annotated text
+    const annotated = document.createElement('div');
+    annotated.className = 'annotated-text';
+    annotated.innerHTML = buildAnnotatedText(originalText, parsed.corrections);
+    card.appendChild(annotated);
+
+    // Corrected sentence
+    if (parsed.corrected_text && parsed.corrected_text !== originalText) {
+      const corr = document.createElement('div');
+      corr.className = 'corrected-line';
+      corr.innerHTML = '<span class="check">✓</span>' + escHtml(parsed.corrected_text);
+      card.appendChild(corr);
+    }
+
+    // Explanations toggle
+    const toggle = document.createElement('button');
+    toggle.className = 'explain-toggle';
+    toggle.textContent = '▾ Ver explicaciones';
+    card.appendChild(toggle);
+
+    const explDiv = document.createElement('div');
+    explDiv.className = 'explanations';
+    parsed.corrections.forEach(function(c) {
+      const item = document.createElement('div');
+      item.className = 'explain-item';
+      item.innerHTML =
+        '<span class="explain-wrong">' + escHtml(c.wrong) + '</span>' +
+        '<span class="explain-arrow">→</span>' +
+        '<span class="explain-right">' + escHtml(c.correct) + '</span>' +
+        '<span class="explain-note">' + escHtml(c.explanation || '') + '</span>';
+      explDiv.appendChild(item);
+    });
+    card.appendChild(explDiv);
+
+    toggle.addEventListener('click', function() {
+      explDiv.classList.toggle('open');
+      toggle.textContent = explDiv.classList.contains('open')
+        ? '▴ Ocultar explicaciones'
+        : '▾ Ver explicaciones';
+    });
+
+    msgs.appendChild(card);
+
+  } else if (!parsed.has_errors) {
+    // Perfect text badge
+    const allGood = document.createElement('div');
+    allGood.className = 'all-good';
+    const langHtml = parsed.detected_language
+      ? ' <span class="lang-badge">' + escHtml(parsed.detected_language) + '</span>'
+      : '';
+    allGood.innerHTML = '✓ Sin errores' + langHtml;
+    msgs.appendChild(allGood);
+  }
+
+  // Tutor reply
+  const reply = document.createElement('div');
+  reply.className = 'msg-tutor';
+  reply.textContent = parsed.reply || '';
+  msgs.appendChild(reply);
+}
+
+// ─── BUILD ANNOTATED HTML ──────────────────────────────────────────────────────
+function buildAnnotatedText(original, corrections) {
+  // Find exact positions of each correction substring
+  const segs = [];
+  corrections.forEach(function(c) {
+    if (!c.wrong || !c.correct) return;
+    const idx = original.indexOf(c.wrong);
+    if (idx !== -1) {
+      segs.push({ start: idx, end: idx + c.wrong.length, wrong: c.wrong, correct: c.correct });
+    }
+  });
+
+  // Sort by position, remove overlaps
+  segs.sort(function(a, b) { return a.start - b.start; });
+
+  let html = '';
+  let pos = 0;
+
+  segs.forEach(function(seg) {
+    if (seg.start < pos) return; // skip overlapping
+    html += escHtml(original.slice(pos, seg.start));
+    html +=
+      '<span class="err-wrap">' +
+        '<span class="err-fix">' + escHtml(seg.correct) + '</span>' +
+        '<span class="err-wrong">' + escHtml(seg.wrong) + '</span>' +
+      '</span>';
+    pos = seg.end;
+  });
+
+  html += escHtml(original.slice(pos));
+  return html;
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function scrollToBottom() {
+  const msgs = document.getElementById('messages');
+  setTimeout(function() { msgs.scrollTop = msgs.scrollHeight; }, 50);
+}
+
+// ─── EVENT LISTENERS ──────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('user-input');
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  input.addEventListener('input', function() {
+    this.style.height = '46px';
+    this.style.height = Math.min(this.scrollHeight, 180) + 'px';
+  });
+
+  document.getElementById('api-key-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') saveKey();
+  });
+
+  init();
+});
+{% endraw %}
+</script>
+
+</body>
+</html>
