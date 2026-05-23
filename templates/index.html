@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ config.title }}</title>
+<meta name="description" content="{{ config.description }}">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1410;
+    --cream: #f5f0e8;
+    --parchment: #ede5d0;
+    --gold: #c8922a;
+    --gold-light: #e8b84b;
+    --blue-fr: #002395;
+    --red-fr: #ED2939;
+    --muted: #7a6e5f;
+    --border: #d4c8b0;
+    --card-bg: #faf7f1;
+    --accent-warm: #8b3a2a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 20px,
+      rgba(200,146,42,0.04) 20px,
+      rgba(200,146,42,0.04) 21px
+    );
+  }
+  .flag-stripe {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 1.5rem;
+  }
+  .flag-stripe span {
+    width: 28px;
+    height: 6px;
+    border-radius: 1px;
+  }
+  .flag-stripe .bl { background: var(--blue-fr); }
+  .flag-stripe .wh { background: #fff; }
+  .flag-stripe .rd { background: var(--red-fr); }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
+  header h1 em {
+    color: var(--gold-light);
+    font-style: italic;
+  }
+  header p.subtitle {
+    margin-top: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(245,240,232,0.55);
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    background: var(--parchment);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(26,20,16,0.08);
+  }
+  nav a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.3rem 0.65rem;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    transition: all 0.2s;
+    background: var(--card-bg);
+  }
+  nav a:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: #fff;
+  }
+
+  /* ─── MAIN LAYOUT ─── */
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  /* ─── SECTION WRAPPER ─── */
+  section {
+    scroll-margin-top: 80px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--ink);
+  }
+  .section-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.8rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--gold);
+    min-width: 1.5rem;
+  }
+  .section-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  .section-subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  /* ─── TABLE BASE ─── */
+  .tbl-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  table th {
+    background: var(--ink);
+    color: var(--cream);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.55rem 0.85rem;
+    text-align: left;
+  }
+  table td {
+    padding: 0.5rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table tr:last-child td { border-bottom: none; }
+  table tr:nth-child(even) td { background: rgba(237,229,208,0.35); }
+  table tr:hover td { background: rgba(200,146,42,0.07); }
+
+  .fr { font-weight: 500; color: var(--ink); }
+  .pron { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--muted); }
+  .es { color: var(--muted); font-style: italic; font-size: 0.85rem; }
+
+  /* ─── GRID CARDS ─── */
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.25rem;
+  }
+  .card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    color: var(--ink);
+  }
+  .card h3 span.badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.15rem 0.4rem;
+    border-radius: 2px;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+    text-transform: uppercase;
+  }
+  .card table th { font-size: 0.6rem; }
+  .card table td { font-size: 0.82rem; padding: 0.4rem 0.65rem; }
+
+  /* ─── CONJUGATION GRID ─── */
+  .conj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+  .conj-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .conj-card-head {
+    background: var(--ink);
+    color: var(--cream);
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-style: italic;
+    padding: 0.5rem 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .conj-card-head .verb-type {
+    font-family: 'DM Mono', monospace;
+    font-style: normal;
+    font-size: 0.6rem;
+    color: var(--gold-light);
+    letter-spacing: 0.08em;
+  }
+  .conj-card table { margin: 0; }
+  .conj-card table td { font-size: 0.8rem; }
+  .conj-card table td:first-child { color: var(--muted); font-size: 0.75rem; min-width: 60px; }
+  .conj-card table td:last-child { font-weight: 500; }
+
+  /* ─── CALLOUT BOX ─── */
+  .callout {
+    background: rgba(200,146,42,0.08);
+    border-left: 3px solid var(--gold);
+    padding: 0.85rem 1.1rem;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.85rem;
+    margin-top: 1rem;
+  }
+  .callout strong { color: var(--gold); }
+  .callout ul { margin: 0.4rem 0 0 1.1rem; }
+  .callout li { margin-bottom: 0.2rem; }
+
+  .rule-box {
+    background: var(--parchment);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.83rem;
+    margin-top: 0.75rem;
+  }
+  .rule-box p + p { margin-top: 0.35rem; }
+  code {
+    font-family: 'DM Mono', monospace;
+    background: rgba(26,20,16,0.07);
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    font-size: 0.82em;
+  }
+
+  /* ─── PHRASE PAIRS ─── */
+  .phrase-pair {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.87rem;
+    flex-wrap: wrap;
+  }
+  .phrase-pair:last-child { border-bottom: none; }
+  .phrase-pair .phrase-fr { font-weight: 500; flex: 1; min-width: 160px; }
+  .phrase-pair .phrase-es { color: var(--muted); font-style: italic; flex: 1; min-width: 160px; }
+
+  /* ─── COLOR SWATCHES ─── */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+  }
+  .color-swatch {
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    font-size: 0.78rem;
+  }
+  .color-dot {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+    color: rgba(0,0,0,0.4);
+  }
+  .color-label { padding: 0.3rem 0.5rem; background: var(--card-bg); }
+  .color-label .fr { font-size: 0.8rem; display: block; }
+  .color-label .es { font-size: 0.7rem; }
+
+  /* ─── NUMBERS ─── */
+  .number-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 0.4rem;
+  }
+  .num-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.5rem 0.6rem;
+    text-align: center;
+  }
+  .num-card .num { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); }
+  .num-card .word { font-size: 0.75rem; font-weight: 500; }
+
+  /* ─── PRONUNCIATION ─── */
+  .pron-row {
+    display: grid;
+    grid-template-columns: 80px 80px 1fr;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.84rem;
+  }
+  .pron-row:last-child { border-bottom: none; }
+  .pron-row .letter { font-family: 'DM Mono', monospace; font-weight: 500; font-size: 0.95rem; color: var(--blue-fr); }
+  .pron-row .sound { font-family: 'DM Mono', monospace; color: var(--gold); font-size: 0.8rem; }
+
+  /* ─── NÉGATION ─── */
+  .neg-example {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem 1rem;
+    font-size: 0.84rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .neg-example:last-child { border-bottom: none; }
+  .neg-aff { color: var(--muted); }
+  .neg-neg { font-weight: 500; }
+
+  /* ─── TAGS ─── */
+  .tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.45rem;
+    border-radius: 2px;
+    margin-left: 0.35rem;
+    vertical-align: middle;
+  }
+  .tag-masc { background: #dde8f7; color: var(--blue-fr); }
+  .tag-fem  { background: #fde8e8; color: var(--red-fr); }
+  .tag-warn { background: rgba(200,146,42,0.15); color: var(--gold); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+  footer strong { color: var(--gold); }
+
+  @media (max-width: 600px) {
+    .pron-row { grid-template-columns: 60px 70px 1fr; }
+    .neg-example { grid-template-columns: 1fr; }
+    .section-subtitle { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="flag-stripe">
+    <span class="bl"></span><span class="bl"></span><span class="bl"></span>
+    <span class="wh"></span><span class="wh"></span><span class="wh"></span>
+    <span class="rd"></span><span class="rd"></span><span class="rd"></span>
+  </div>
+  <h1>Français <em>de Base</em></h1>
+  <p class="subtitle">Guide d'étude · Niveau débutant · Referencia para hispanohablantes</p>
+</header>
+
+<nav>
+  <a href="#salutations">Salutations</a>
+  <a href="#pronoms">Pronoms</a>
+  <a href="#interrogatifs">Interrogatifs</a>
+  <a href="#etre-avoir-aller">Être/Avoir/Aller</a>
+  <a href="#verbes">Verbes</a>
+  <a href="#possessifs">Possessifs</a>
+  <a href="#objets">Pronoms obj.</a>
+  <a href="#vocabulaire">Vocabulaire</a>
+  <a href="#phrases">Phrases</a>
+  <a href="#articles">Articles</a>
+  <a href="#reflechis">Réfléchis</a>
+  <a href="#prononciation">Prononciation</a>
+  <a href="#negation">Négation</a>
+  <a href="#prepositions">Prépositions</a>
+</nav>
+
+<main>
+
+<!-- ─── 1. SALUTATIONS ─── -->
+<section id="salutations">
+  <div class="section-header">
+    <span class="section-number">01</span>
+    <h2>Salutations et expressions de base</h2>
+    <span class="section-subtitle">avec prononciation</span>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Saludos y despedidas</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Français</th><th>Pronon.</th><th>Español</th></tr></thead>
+          <tbody>
+            <tr><td class="fr">Bonjour</td><td class="pron">/bon-zhur/</td><td class="es">Buenos días / Hola</td></tr>
+            <tr><td class="fr">Bonsoir</td><td class="pron">/bon-suar/</td><td class="es">Buenas tardes/noches</td></tr>
+            <tr><td class="fr">Bonne nuit</td><td class="pron">/bon nwi/</td><td class="es">Buenas noches</td></tr>
+            <tr><td class="fr">Salut !</td><td class="pron">/sa-lu/</td><td class="es">Hola (informal)</td></tr>
+            <tr><td class="fr">Au revoir</td><td class="pron">/o re-vuar/</td><td class="es">Adiós</td></tr>
+            <tr><td class="fr">À bientôt</td><td class="pron">/a bien-to/</td><td class="es">Hasta luego</td></tr>
+            <tr><td class="fr">À demain</td><td class="pron">/a de-men/</td><td class="es">Hasta mañana</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Expresiones útiles</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Français</th><th>Español</th></tr></thead>
+          <tbody>
+            <tr><td class="fr">Ça va ?</td><td class="es">¿Qué tal?</td></tr>
+            <tr><td class="fr">Très bien !</td><td class="es">¡Muy bien!</td></tr>
+            <tr><td class="fr">Pas mal.</td><td class="es">No está mal.</td></tr>
+            <tr><td class="fr">Comme ci, comme ça.</td><td class="es">Así así.</td></tr>
+            <tr><td class="fr">Merci / Merci beaucoup</td><td class="es">Gracias / Muchas gracias</td></tr>
+            <tr><td class="fr">De rien</td><td class="es">De nada</td></tr>
+            <tr><td class="fr">S'il vous plaît</td><td class="es">Por favor (formal)</td></tr>
+            <tr><td class="fr">S'il te plaît</td><td class="es">Por favor (informal)</td></tr>
+            <tr><td class="fr">Excusez-moi / Pardon</td><td class="es">Disculpe / Perdón</td></tr>
+            <tr><td class="fr">Enchanté(e)</td><td class="es">Mucho gusto</td></tr>
+            <tr><td class="fr">Je m'appelle…</td><td class="es">Me llamo…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top:1rem">
+    <div class="card">
+      <h3>Formel <span class="badge" style="background:var(--blue-fr)">vous</span></h3>
+      <div class="phrase-pair"><span class="phrase-fr">Comment allez-vous ?</span><span class="phrase-es">¿Cómo está usted?</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Vous êtes…</span><span class="phrase-es">Usted es…</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Pouvez-vous… ?</span><span class="phrase-es">¿Podría usted…?</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Je vous en prie</span><span class="phrase-es">Con mucho gusto</span></div>
+    </div>
+    <div class="card">
+      <h3>Informel <span class="badge" style="background:var(--accent-warm)">tu</span></h3>
+      <div class="phrase-pair"><span class="phrase-fr">Comment tu vas ?</span><span class="phrase-es">¿Cómo estás?</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Tu es…</span><span class="phrase-es">Tú eres…</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Tu peux… ?</span><span class="phrase-es">¿Puedes…?</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Pas de problème !</span><span class="phrase-es">No hay problema.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 2. PRONOMS ─── -->
+<section id="pronoms">
+  <div class="section-header">
+    <span class="section-number">02</span>
+    <h2>Pronoms personnels</h2>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Pronom</th><th>Español</th><th>Remarque</th></tr></thead>
+      <tbody>
+        <tr><td class="fr">Je (J')</td><td class="es">yo</td><td>Devant voyelle : <code>J'aime</code></td></tr>
+        <tr><td class="fr">Tu</td><td class="es">tú</td><td>Informal</td></tr>
+        <tr><td class="fr">Il / Elle</td><td class="es">él / ella</td><td>3ª pers. sing.</td></tr>
+        <tr><td class="fr">On</td><td class="es">nosotros (oral)</td><td>Très fréquent à l'oral</td></tr>
+        <tr><td class="fr">Nous</td><td class="es">nosotros</td><td>Formel et écrit</td></tr>
+        <tr><td class="fr">Vous</td><td class="es">vosotros / usted</td><td>Pluriel ou formel</td></tr>
+        <tr><td class="fr">Ils / Elles</td><td class="es">ellos / ellas</td><td><em>Ils</em> = mixte o masculino</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">
+    <strong>ON — el pronombre esencial</strong>
+    <ul>
+      <li><code>On</code> = <code>nous</code> en el habla cotidiana</li>
+      <li><em>On va au cinéma.</em> = <em>Nous allons au cinéma.</em></li>
+      <li>Siempre se conjuga como <strong>Il/Elle</strong> (3ª pers. sing.)</li>
+      <li>En escritura formal se prefiere <code>Nous</code></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─── 3. INTERROGATIFS ─── -->
+<section id="interrogatifs">
+  <div class="section-header">
+    <span class="section-number">03</span>
+    <h2>Mots interrogatifs</h2>
+    <span class="section-subtitle">cómo hacer preguntas</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Mot</th><th>Exemple</th><th>Traduction</th></tr></thead>
+      <tbody>
+        <tr><td class="fr">Qui</td><td><em>Qui est-ce ?</em></td><td class="es">¿Quién es?</td></tr>
+        <tr><td class="fr">Qu'est-ce que</td><td><em>Qu'est-ce que tu fais ?</em></td><td class="es">¿Qué haces?</td></tr>
+        <tr><td class="fr">Où</td><td><em>Où habites-tu ?</em></td><td class="es">¿Dónde vives?</td></tr>
+        <tr><td class="fr">Quand</td><td><em>Quand arrives-tu ?</em></td><td class="es">¿Cuándo llegas?</td></tr>
+        <tr><td class="fr">Pourquoi</td><td><em>Pourquoi tu pleures ?</em></td><td class="es">¿Por qué lloras?</td></tr>
+        <tr><td class="fr">Comment</td><td><em>Comment ça marche ?</em></td><td class="es">¿Cómo funciona?</td></tr>
+        <tr><td class="fr">Combien</td><td><em>Combien ça coûte ?</em></td><td class="es">¿Cuánto cuesta?</td></tr>
+        <tr><td class="fr">Quel âge</td><td><em>Quel âge as-tu ?</em></td><td class="es">¿Cuántos años tienes?</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─── 4/5/6. ÊTRE AVOIR ALLER ─── -->
+<section id="etre-avoir-aller">
+  <div class="section-header">
+    <span class="section-number">04–06</span>
+    <h2>Verbes irréguliers essentiels</h2>
+    <span class="section-subtitle">être · avoir · aller</span>
+  </div>
+  <div class="conj-grid">
+    <div class="conj-card">
+      <div class="conj-card-head">être <span class="verb-type">être</span></div>
+      <table><tbody>
+        <tr><td>Je</td><td>suis</td></tr>
+        <tr><td>Tu</td><td>es</td></tr>
+        <tr><td>Il/Elle/On</td><td>est</td></tr>
+        <tr><td>Nous</td><td>sommes</td></tr>
+        <tr><td>Vous</td><td>êtes</td></tr>
+        <tr><td>Ils/Elles</td><td>sont</td></tr>
+      </tbody></table>
+    </div>
+    <div class="conj-card">
+      <div class="conj-card-head">avoir <span class="verb-type">avoir</span></div>
+      <table><tbody>
+        <tr><td>Je</td><td>ai</td></tr>
+        <tr><td>Tu</td><td>as</td></tr>
+        <tr><td>Il/Elle/On</td><td>a</td></tr>
+        <tr><td>Nous</td><td>avons</td></tr>
+        <tr><td>Vous</td><td>avez</td></tr>
+        <tr><td>Ils/Elles</td><td>ont</td></tr>
+      </tbody></table>
+    </div>
+    <div class="conj-card">
+      <div class="conj-card-head">aller <span class="verb-type">aller</span></div>
+      <table><tbody>
+        <tr><td>Je</td><td>vais</td></tr>
+        <tr><td>Tu</td><td>vas</td></tr>
+        <tr><td>Il/Elle/On</td><td>va</td></tr>
+        <tr><td>Nous</td><td>allons</td></tr>
+        <tr><td>Vous</td><td>allez</td></tr>
+        <tr><td>Ils/Elles</td><td>vont</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="rule-box" style="margin-top:1rem">
+    <p><strong>Futur proche</strong> = <code>aller</code> + infinitif</p>
+    <p><em>Je vais manger.</em> · <em>Tu vas partir.</em> · <em>Nous allons voyager.</em></p>
+  </div>
+  <div style="margin-top:1rem">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th colspan="2">Expressions avec AVOIR <span style="font-weight:300;font-style:italic">(equivalen a estar/tener en español)</span></th></tr></thead>
+        <tbody>
+          <tr><td class="fr">avoir faim</td><td class="es">tener hambre</td></tr>
+          <tr><td class="fr">avoir soif</td><td class="es">tener sed</td></tr>
+          <tr><td class="fr">avoir chaud / froid</td><td class="es">tener calor / frío</td></tr>
+          <tr><td class="fr">avoir peur</td><td class="es">tener miedo</td></tr>
+          <tr><td class="fr">avoir sommeil</td><td class="es">tener sueño</td></tr>
+          <tr><td class="fr">avoir raison / tort</td><td class="es">tener razón / estar equivocado</td></tr>
+          <tr><td class="fr">avoir besoin</td><td class="es">necesitar</td></tr>
+          <tr><td class="fr">avoir l'air</td><td class="es">parecer</td></tr>
+          <tr><td class="fr">avoir hâte</td><td class="es">tener ganas</td></tr>
+          <tr><td class="fr">avoir lieu</td><td class="es">tener lugar</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 7. VERBES ─── -->
+<section id="verbes">
+  <div class="section-header">
+    <span class="section-number">07</span>
+    <h2>Verbes essentiels — présent</h2>
+  </div>
+  <div class="conj-grid">
+    <div class="conj-card">
+      <div class="conj-card-head">pouvoir <span class="verb-type">irr.</span></div>
+      <table><tbody>
+        <tr><td>Je</td><td>peux</td></tr><tr><td>Tu</td><td>peux</td></tr>
+        <tr><td>Il/Elle/On</td><td>peut</td></tr><tr><td>Nous</td><td>pouvons</td></tr>
+        <tr><td>Vous</td><td>pouvez</td></tr><tr><td>Ils/Elles</td><td>peuvent</td></tr>
+      </tbody></table>
+    </div>
+    <div class="conj-card">
+      <div class="conj-card-head">vouloir <span class="verb-type">irr.</span></div>
+      <table><tbody>
+        <tr><td>Je</td><td>veux</td></tr><tr><td>Tu</td><td>veux</td></tr>
+        <tr><td>Il/Elle/On</td><td>veut</td></tr><tr><td>Nous</td><td>voulons</td></tr>
+        <tr><td>Vous</td><td>voulez</td></tr><tr><td>Ils/Elles</td><td>veulent</td></tr>
+      </tbody></table>
+    </div>
+    <div class="conj-card">
+      <div class="conj-card-head">devoir <span class="verb-type">irr.</span></div>
+      <table><tbody>
+        <tr><td>Je</td><td>dois</td></tr><tr><td>Tu</td><td>dois</td></tr>
+        <tr><td>Il/Elle/On</td><td>doit</td></tr><tr><td>Nous</td><td>devons</td></tr>
+        <tr><td>Vous</td><td>devez</td></tr><tr><td>Ils/Elles</td><td>doivent</td></tr>
+      </tbody></table>
+    </div>
+    <div class="conj-card">
+      <div class="conj-card-head">savoir <span class="verb-type">irr.</span></div>
+      <table><tbody>
+        <tr><td>Je</td><td>sais</td></tr><tr><td>Tu</td><td>sais</td></tr>
+        <tr><td>Il/Elle/On</td><td>sait</td></tr><tr><td>Nous</td><td>savons</td></tr>
+        <tr><td>Vous</td><td>savez</td></tr><tr><td>Ils/Elles</td><td>savent</td></tr>
+      </tbody></table>
+    </div>
+    <div class="conj-card">
+      <div class="conj-card-head">parler <span class="verb-type">–er reg.</span></div>
+      <table><tbody>
+        <tr><td>Je</td><td>parle</td></tr><tr><td>Tu</td><td>parles</td></tr>
+        <tr><td>Il/Elle/On</td><td>parle</td></tr><tr><td>Nous</td><td>parlons</td></tr>
+        <tr><td>Vous</td><td>parlez</td></tr><tr><td>Ils/Elles</td><td>parlent</td></tr>
+      </tbody></table>
+    </div>
+    <div class="conj-card">
+      <div class="conj-card-head">finir <span class="verb-type">–ir reg.</span></div>
+      <table><tbody>
+        <tr><td>Je</td><td>finis</td></tr><tr><td>Tu</td><td>finis</td></tr>
+        <tr><td>Il/Elle/On</td><td>finit</td></tr><tr><td>Nous</td><td>finissons</td></tr>
+        <tr><td>Vous</td><td>finissez</td></tr><tr><td>Ils/Elles</td><td>finissent</td></tr>
+      </tbody></table>
+    </div>
+    <div class="conj-card">
+      <div class="conj-card-head">lire <span class="verb-type">irr.</span></div>
+      <table><tbody>
+        <tr><td>Je</td><td>lis</td></tr><tr><td>Tu</td><td>lis</td></tr>
+        <tr><td>Il/Elle/On</td><td>lit</td></tr><tr><td>Nous</td><td>lisons</td></tr>
+        <tr><td>Vous</td><td>lisez</td></tr><tr><td>Ils/Elles</td><td>lisent</td></tr>
+      </tbody></table>
+    </div>
+    <div class="conj-card">
+      <div class="conj-card-head">voir <span class="verb-type">irr.</span></div>
+      <table><tbody>
+        <tr><td>Je</td><td>vois</td></tr><tr><td>Tu</td><td>vois</td></tr>
+        <tr><td>Il/Elle/On</td><td>voit</td></tr><tr><td>Nous</td><td>voyons</td></tr>
+        <tr><td>Vous</td><td>voyez</td></tr><tr><td>Ils/Elles</td><td>voient</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 8. POSSESSIFS ─── -->
+<section id="possessifs">
+  <div class="section-header">
+    <span class="section-number">08</span>
+    <h2>Adjectifs possessifs</h2>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Personne</th><th>Masc. <span class="tag tag-masc">M</span></th><th>Fém. <span class="tag tag-fem">F</span></th><th>Pluriel</th><th>Español</th></tr></thead>
+      <tbody>
+        <tr><td>Je</td><td class="fr">mon</td><td class="fr">ma</td><td class="fr">mes</td><td class="es">mi / mis</td></tr>
+        <tr><td>Tu</td><td class="fr">ton</td><td class="fr">ta</td><td class="fr">tes</td><td class="es">tu / tus</td></tr>
+        <tr><td>Il / Elle</td><td class="fr">son</td><td class="fr">sa</td><td class="fr">ses</td><td class="es">su / sus</td></tr>
+        <tr><td>Nous</td><td class="fr">notre</td><td class="fr">notre</td><td class="fr">nos</td><td class="es">nuestro/a</td></tr>
+        <tr><td>Vous</td><td class="fr">votre</td><td class="fr">votre</td><td class="fr">vos</td><td class="es">vuestro/a</td></tr>
+        <tr><td>Ils / Elles</td><td class="fr">leur</td><td class="fr">leur</td><td class="fr">leurs</td><td class="es">su / sus</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">
+    <strong>Ante vocal o h muda → forma masculina</strong>
+    <ul>
+      <li><code>mon amie</code> (no <code>ma amie</code>)</li>
+      <li><code>ton école</code> · <code>son histoire</code></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─── 9. PRONOMS OBJETS ─── -->
+<section id="objets">
+  <div class="section-header">
+    <span class="section-number">09</span>
+    <h2>Pronoms objets — COD et COI</h2>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>COD — Objet direct</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Personne</th><th>Pronom</th><th>Exemple</th></tr></thead>
+          <tbody>
+            <tr><td>1ª sing.</td><td class="fr">me (m')</td><td class="es">Il me voit.</td></tr>
+            <tr><td>2ª sing.</td><td class="fr">te (t')</td><td class="es">Je te regarde.</td></tr>
+            <tr><td>3ª masc.</td><td class="fr">le (l')</td><td class="es">Je le vois.</td></tr>
+            <tr><td>3ª fém.</td><td class="fr">la (l')</td><td class="es">Il la connaît.</td></tr>
+            <tr><td>1ª pl.</td><td class="fr">nous</td><td class="es">Il nous aide.</td></tr>
+            <tr><td>2ª pl.</td><td class="fr">vous</td><td class="es">Je vous vois.</td></tr>
+            <tr><td>3ª pl.</td><td class="fr">les</td><td class="es">Je les aime.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>COI — Objet indirecto</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Personne</th><th>Pronom</th><th>Exemple</th></tr></thead>
+          <tbody>
+            <tr><td>1ª sing.</td><td class="fr">me (m')</td><td class="es">Il me parle.</td></tr>
+            <tr><td>2ª sing.</td><td class="fr">te (t')</td><td class="es">Je te dis.</td></tr>
+            <tr><td>3ª sing.</td><td class="fr">lui</td><td class="es">Il lui dit.</td></tr>
+            <tr><td>1ª pl.</td><td class="fr">nous</td><td class="es">Il nous dit.</td></tr>
+            <tr><td>2ª pl.</td><td class="fr">vous</td><td class="es">Je vous dis.</td></tr>
+            <tr><td>3ª pl.</td><td class="fr">leur</td><td class="es">Je leur parle.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="callout" style="margin-top:0.75rem"><strong>Regla de oro:</strong> El pronombre siempre va <em>antes</em> del verbo. <code>Je le vois.</code> / <code>Il lui parle.</code></div>
+</section>
+
+<!-- ─── 10. VOCABULAIRE ─── -->
+<section id="vocabulaire">
+  <div class="section-header">
+    <span class="section-number">10</span>
+    <h2>Vocabulaire de base</h2>
+    <span class="section-subtitle">nombres · jours · couleurs · mots</span>
+  </div>
+
+  <h3 style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:0.75rem;color:var(--muted)">Nombres</h3>
+  <div class="number-grid">
+    <div class="num-card"><div class="num">0</div><div class="word">zéro</div></div>
+    <div class="num-card"><div class="num">1</div><div class="word">un/une</div></div>
+    <div class="num-card"><div class="num">2</div><div class="word">deux</div></div>
+    <div class="num-card"><div class="num">3</div><div class="word">trois</div></div>
+    <div class="num-card"><div class="num">4</div><div class="word">quatre</div></div>
+    <div class="num-card"><div class="num">5</div><div class="word">cinq</div></div>
+    <div class="num-card"><div class="num">6</div><div class="word">six</div></div>
+    <div class="num-card"><div class="num">7</div><div class="word">sept</div></div>
+    <div class="num-card"><div class="num">8</div><div class="word">huit</div></div>
+    <div class="num-card"><div class="num">9</div><div class="word">neuf</div></div>
+    <div class="num-card"><div class="num">10</div><div class="word">dix</div></div>
+    <div class="num-card"><div class="num">11</div><div class="word">onze</div></div>
+    <div class="num-card"><div class="num">12</div><div class="word">douze</div></div>
+    <div class="num-card"><div class="num">20</div><div class="word">vingt</div></div>
+    <div class="num-card"><div class="num">30</div><div class="word">trente</div></div>
+    <div class="num-card"><div class="num">40</div><div class="word">quarante</div></div>
+    <div class="num-card"><div class="num">50</div><div class="word">cinquante</div></div>
+    <div class="num-card"><div class="num">60</div><div class="word">soixante</div></div>
+    <div class="num-card"><div class="num">70</div><div class="word">soixante-dix</div></div>
+    <div class="num-card"><div class="num">80</div><div class="word">quatre-vingts</div></div>
+    <div class="num-card"><div class="num">90</div><div class="word">quatre-vingt-dix</div></div>
+    <div class="num-card"><div class="num">100</div><div class="word">cent</div></div>
+    <div class="num-card"><div class="num">1000</div><div class="word">mille</div></div>
+    <div class="num-card"><div class="num">1M</div><div class="word">un million</div></div>
+  </div>
+
+  <div class="grid-2" style="margin-top:1.5rem">
+    <div class="card">
+      <h3>Jours</h3>
+      <div class="tbl-wrap">
+        <table><thead><tr><th>Español</th><th>Français</th></tr></thead><tbody>
+          <tr><td>Lunes</td><td class="fr">lundi</td></tr>
+          <tr><td>Martes</td><td class="fr">mardi</td></tr>
+          <tr><td>Miércoles</td><td class="fr">mercredi</td></tr>
+          <tr><td>Jueves</td><td class="fr">jeudi</td></tr>
+          <tr><td>Viernes</td><td class="fr">vendredi</td></tr>
+          <tr><td>Sábado</td><td class="fr">samedi</td></tr>
+          <tr><td>Domingo</td><td class="fr">dimanche</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Mois</h3>
+      <div class="tbl-wrap">
+        <table><thead><tr><th>Español</th><th>Français</th></tr></thead><tbody>
+          <tr><td>Enero</td><td class="fr">janvier</td></tr>
+          <tr><td>Febrero</td><td class="fr">février</td></tr>
+          <tr><td>Marzo</td><td class="fr">mars</td></tr>
+          <tr><td>Abril</td><td class="fr">avril</td></tr>
+          <tr><td>Mayo</td><td class="fr">mai</td></tr>
+          <tr><td>Junio</td><td class="fr">juin</td></tr>
+          <tr><td>Julio</td><td class="fr">juillet</td></tr>
+          <tr><td>Agosto</td><td class="fr">août</td></tr>
+          <tr><td>Septiembre</td><td class="fr">septembre</td></tr>
+          <tr><td>Octubre</td><td class="fr">octobre</td></tr>
+          <tr><td>Noviembre</td><td class="fr">novembre</td></tr>
+          <tr><td>Diciembre</td><td class="fr">décembre</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Playfair Display',serif;font-size:1rem;margin:1.5rem 0 0.75rem;color:var(--muted)">Couleurs</h3>
+  <div class="color-grid">
+    <div class="color-swatch"><div class="color-dot" style="background:#c0392b;color:white">■</div><div class="color-label"><span class="fr">rouge</span><span class="es">rojo/a</span></div></div>
+    <div class="color-swatch"><div class="color-dot" style="background:#2980b9;color:white">■</div><div class="color-label"><span class="fr">bleu(e)</span><span class="es">azul</span></div></div>
+    <div class="color-swatch"><div class="color-dot" style="background:#27ae60;color:white">■</div><div class="color-label"><span class="fr">vert(e)</span><span class="es">verde</span></div></div>
+    <div class="color-swatch"><div class="color-dot" style="background:#f1c40f">■</div><div class="color-label"><span class="fr">jaune</span><span class="es">amarillo/a</span></div></div>
+    <div class="color-swatch"><div class="color-dot" style="background:#fff;border-bottom:1px solid var(--border)">■</div><div class="color-label"><span class="fr">blanc(he)</span><span class="es">blanco/a</span></div></div>
+    <div class="color-swatch"><div class="color-dot" style="background:#1a1a1a;color:white">■</div><div class="color-label"><span class="fr">noir(e)</span><span class="es">negro/a</span></div></div>
+    <div class="color-swatch"><div class="color-dot" style="background:#95a5a6">■</div><div class="color-label"><span class="fr">gris(e)</span><span class="es">gris</span></div></div>
+    <div class="color-swatch"><div class="color-dot" style="background:#8e44ad;color:white">■</div><div class="color-label"><span class="fr">violet(te)</span><span class="es">morado/a</span></div></div>
+    <div class="color-swatch"><div class="color-dot" style="background:#ff9f43">■</div><div class="color-label"><span class="fr">orange</span><span class="es">naranja</span></div></div>
+    <div class="color-swatch"><div class="color-dot" style="background:#e91e8c;color:white">■</div><div class="color-label"><span class="fr">rose</span><span class="es">rosado/a</span></div></div>
+    <div class="color-swatch"><div class="color-dot" style="background:#795548;color:white">■</div><div class="color-label"><span class="fr">marron</span><span class="es">marrón</span></div></div>
+    <div class="color-swatch"><div class="color-dot" style="background:#d4ac6e">■</div><div class="color-label"><span class="fr">beige</span><span class="es">beige</span></div></div>
+  </div>
+
+  <div class="grid-2" style="margin-top:1.5rem">
+    <div class="card">
+      <h3>Noms essentiels</h3>
+      <div class="tbl-wrap">
+        <table><thead><tr><th>Español</th><th>Français</th></tr></thead><tbody>
+          <tr><td>Agua</td><td class="fr">l'eau (f)</td></tr>
+          <tr><td>Pan</td><td class="fr">le pain</td></tr>
+          <tr><td>Casa</td><td class="fr">la maison</td></tr>
+          <tr><td>Trabajo</td><td class="fr">le travail</td></tr>
+          <tr><td>Ciudad</td><td class="fr">la ville</td></tr>
+          <tr><td>Dinero</td><td class="fr">l'argent</td></tr>
+          <tr><td>Escuela</td><td class="fr">l'école</td></tr>
+          <tr><td>Familia</td><td class="fr">la famille</td></tr>
+          <tr><td>Amigo/a</td><td class="fr">l'ami(e)</td></tr>
+          <tr><td>Coche</td><td class="fr">la voiture</td></tr>
+          <tr><td>Tiempo</td><td class="fr">le temps</td></tr>
+          <tr><td>Teléfono</td><td class="fr">le téléphone</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Tiempo y conectores</h3>
+      <div class="tbl-wrap">
+        <table><thead><tr><th>Español</th><th>Français</th></tr></thead><tbody>
+          <tr><td>Hoy</td><td class="fr">aujourd'hui</td></tr>
+          <tr><td>Mañana</td><td class="fr">demain</td></tr>
+          <tr><td>Ayer</td><td class="fr">hier</td></tr>
+          <tr><td>Ahora</td><td class="fr">maintenant</td></tr>
+          <tr><td>Aquí</td><td class="fr">ici</td></tr>
+          <tr><td>Allá</td><td class="fr">là-bas</td></tr>
+          <tr><td>Siempre</td><td class="fr">toujours</td></tr>
+          <tr><td>Nunca</td><td class="fr">jamais</td></tr>
+          <tr><td>También</td><td class="fr">aussi</td></tr>
+          <tr><td>Pero</td><td class="fr">mais</td></tr>
+          <tr><td>Porque</td><td class="fr">parce que</td></tr>
+          <tr><td>Y / O</td><td class="fr">et / ou</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 11. PHRASES ─── -->
+<section id="phrases">
+  <div class="section-header">
+    <span class="section-number">11</span>
+    <h2>Phrases utiles</h2>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Comprensión y comunicación</h3>
+      <div class="phrase-pair"><span class="phrase-fr">Je ne comprends pas.</span><span class="phrase-es">No entiendo.</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Parlez plus lentement.</span><span class="phrase-es">Más despacio.</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Tu parles espagnol ?</span><span class="phrase-es">¿Hablas español?</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Je ne sais pas.</span><span class="phrase-es">No sé.</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Pouvez-vous répéter ?</span><span class="phrase-es">¿Puede repetir?</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Où est… ?</span><span class="phrase-es">¿Dónde está…?</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Combien ça coûte ?</span><span class="phrase-es">¿Cuánto cuesta?</span></div>
+    </div>
+    <div class="card">
+      <h3>Necesidades y sentimientos</h3>
+      <div class="phrase-pair"><span class="phrase-fr">Je veux ça.</span><span class="phrase-es">Quiero esto.</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">J'ai besoin d'aide.</span><span class="phrase-es">Necesito ayuda.</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">J'ai faim.</span><span class="phrase-es">Tengo hambre.</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Je suis fatigué(e).</span><span class="phrase-es">Estoy cansado/a.</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">J'aime…</span><span class="phrase-es">Me gusta…</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Je n'aime pas…</span><span class="phrase-es">No me gusta…</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Quel dommage !</span><span class="phrase-es">¡Qué lástima!</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 12. ARTICLES ─── -->
+<section id="articles">
+  <div class="section-header">
+    <span class="section-number">12</span>
+    <h2>Le nom et l'article</h2>
+    <span class="section-subtitle">genre · articles · pluriel</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Tipo</th><th>Masc.</th><th>Fém.</th><th>Ante vocal</th><th>Plural</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td>Défini</td><td class="fr">le</td><td class="fr">la</td><td class="fr">l'</td><td class="fr">les</td><td class="es">le livre, la maison, l'ami, les enfants</td></tr>
+        <tr><td>Indéfini</td><td class="fr">un</td><td class="fr">une</td><td class="fr">un/une</td><td class="fr">des</td><td class="es">un chat, une table, des fleurs</td></tr>
+        <tr><td>Partitif</td><td class="fr">du</td><td class="fr">de la</td><td class="fr">de l'</td><td class="fr">des</td><td class="es">du pain, de la viande, de l'eau</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="rule-box" style="margin-top:0.75rem">
+    <p><strong>Contracciones obligatorias:</strong></p>
+    <p><code>de + le → du</code> · <code>de + les → des</code> · <code>à + le → au</code> · <code>à + les → aux</code></p>
+    <p style="margin-top:0.4rem"><em>¡Jamás "de le" ni "à le"!</em></p>
+  </div>
+
+  <div class="grid-2" style="margin-top:1.25rem">
+    <div class="card">
+      <h3>Masculinos <span class="tag tag-warn">trampa</span></h3>
+      <div class="tbl-wrap">
+        <table><thead><tr><th>Terminación → Masc.</th><th>Fém. (excepciones)</th></tr></thead><tbody>
+          <tr><td>-age: le garage, le fromage</td><td>la plage, la cage</td></tr>
+          <tr><td>-ment: le gouvernement</td><td>(casi ninguna)</td></tr>
+          <tr><td>-eau: le bureau, le couteau</td><td>(casi ninguna)</td></tr>
+          <tr><td>-isme: le réalisme</td><td>(casi ninguna)</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Femeninos <span class="tag tag-warn">trampa</span></h3>
+      <div class="tbl-wrap">
+        <table><thead><tr><th>Terminación → Fém.</th><th>Masc. (excepciones)</th></tr></thead><tbody>
+          <tr><td>-tion/-sion: la situation</td><td>(casi ninguna)</td></tr>
+          <tr><td>-té: la société, la beauté</td><td>le côté, l'été</td></tr>
+          <tr><td>-ette: la bicyclette</td><td>(casi ninguna)</td></tr>
+          <tr><td>-ance/-ence: la présence</td><td>le silence</td></tr>
+          <tr><td>-eur (sens/sensation): la peur</td><td>le bonheur</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:0.75rem">
+    <strong>Mots pièges (parecen del otro género)</strong><br>
+    <span style="font-size:0.83rem">
+      Masc. aunque terminan en –e: <code>un problème · un système · un programme · un modèle</code><br>
+      Fém. aunque parecen masc.: <code>la couleur · la douleur · la peur · la chaleur · la valeur</code>
+    </span>
+  </div>
+
+  <div style="margin-top:1.25rem">
+    <h3 style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:0.75rem">Formation du pluriel</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Règle</th><th>Singulier</th><th>Pluriel</th></tr></thead>
+        <tbody>
+          <tr><td>General: añadir –s</td><td class="fr">le chat</td><td class="fr">les chats</td></tr>
+          <tr><td>Ya en –s/–x/–z: sin cambio</td><td class="fr">le bras</td><td class="fr">les bras</td></tr>
+          <tr><td>–eau/–eu → añadir –x</td><td class="fr">le gâteau</td><td class="fr">les gâteaux</td></tr>
+          <tr><td>–al → –aux</td><td class="fr">le journal</td><td class="fr">les journaux</td></tr>
+          <tr><td>7 en –ou → –x</td><td class="fr">le genou</td><td class="fr">les genoux</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout" style="margin-top:0.5rem"><strong>Nota:</strong> El –s final del plural <em>no se pronuncia</em>. <code>les chats</code> → [le sha]</div>
+  </div>
+</section>
+
+<!-- ─── 13. RÉFLÉCHIS ─── -->
+<section id="reflechis">
+  <div class="section-header">
+    <span class="section-number">13</span>
+    <h2>Verbes pronominaux</h2>
+    <span class="section-subtitle">réfléchis et réciproques</span>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Pronoms réfléchis + SE LAVER</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Pronom</th><th>Réfléchi</th><th>Se laver</th></tr></thead>
+          <tbody>
+            <tr><td>Je</td><td class="fr">me (m')</td><td class="fr">me lave</td></tr>
+            <tr><td>Tu</td><td class="fr">te (t')</td><td class="fr">te laves</td></tr>
+            <tr><td>Il/Elle/On</td><td class="fr">se (s')</td><td class="fr">se lave</td></tr>
+            <tr><td>Nous</td><td class="fr">nous</td><td class="fr">nous lavons</td></tr>
+            <tr><td>Vous</td><td class="fr">vous</td><td class="fr">vous lavez</td></tr>
+            <tr><td>Ils/Elles</td><td class="fr">se (s')</td><td class="fr">se lavent</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Posición del pronombre</h3>
+      <div class="phrase-pair"><span class="phrase-fr">Présent</span><span class="phrase-es">pronom AVANT le verbe</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Négation</span><span class="phrase-es">ne + pronom + verbe + pas</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Infinitif</span><span class="phrase-es">pronom AVANT l'infinitif</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Impératif +</span><span class="phrase-es">APRÈS avec tiret: Lève-toi!</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Impératif –</span><span class="phrase-es">Ne te lève pas!</span></div>
+    </div>
+  </div>
+  <div style="margin-top:1rem">
+    <h3 style="font-family:'Playfair Display',serif;font-size:0.95rem;margin-bottom:0.75rem;color:var(--muted)">Verbos de rutina diaria</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Infinitif</th><th>1ª pers.</th><th>Español</th></tr></thead>
+        <tbody>
+          <tr><td class="fr">se lever</td><td>je me lève</td><td class="es">levantarse</td></tr>
+          <tr><td class="fr">se réveiller</td><td>je me réveille</td><td class="es">despertarse</td></tr>
+          <tr><td class="fr">se laver</td><td>je me lave</td><td class="es">lavarse</td></tr>
+          <tr><td class="fr">se doucher</td><td>je me douche</td><td class="es">ducharse</td></tr>
+          <tr><td class="fr">s'habiller</td><td>je m'habille</td><td class="es">vestirse</td></tr>
+          <tr><td class="fr">se brosser les dents</td><td>je me brosse</td><td class="es">cepillarse los dientes</td></tr>
+          <tr><td class="fr">se coucher</td><td>je me couche</td><td class="es">acostarse</td></tr>
+          <tr><td class="fr">s'endormir</td><td>je m'endors</td><td class="es">dormirse</td></tr>
+          <tr><td class="fr">se reposer</td><td>je me repose</td><td class="es">descansar</td></tr>
+          <tr><td class="fr">se promener</td><td>je me promène</td><td class="es">pasear</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3 style="font-family:'Playfair Display',serif;font-size:0.95rem;margin:1rem 0 0.75rem;color:var(--muted)">Emociones y relaciones</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Infinitif</th><th>Exemplo</th><th>Español</th></tr></thead>
+        <tbody>
+          <tr><td class="fr">s'ennuyer</td><td>Je m'ennuie.</td><td class="es">aburrirse</td></tr>
+          <tr><td class="fr">se sentir</td><td>Je me sens bien.</td><td class="es">sentirse</td></tr>
+          <tr><td class="fr">s'inquiéter</td><td>Ne t'inquiète pas!</td><td class="es">preocuparse</td></tr>
+          <tr><td class="fr">se fâcher</td><td>Il se fâche facilement.</td><td class="es">enfadarse</td></tr>
+          <tr><td class="fr">s'amuser</td><td>On s'amuse bien!</td><td class="es">divertirse</td></tr>
+          <tr><td class="fr">se souvenir</td><td>Je me souviens de toi.</td><td class="es">recordar</td></tr>
+          <tr><td class="fr">se tromper</td><td>Je me suis trompé(e).</td><td class="es">equivocarse</td></tr>
+          <tr><td class="fr">s'aimer</td><td>Ils s'aiment beaucoup.</td><td class="es">quererse</td></tr>
+          <tr><td class="fr">se disputer</td><td>Ils se disputent souvent.</td><td class="es">discutir</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 14. PRONONCIATION ─── -->
+<section id="prononciation">
+  <div class="section-header">
+    <span class="section-number">14</span>
+    <h2>Prononciation</h2>
+    <span class="section-subtitle">voyelles · consonnes · liaison</span>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Voyelles</h3>
+      <div class="pron-row" style="font-size:0.72rem;font-weight:600;color:var(--muted)">
+        <span>Letra</span><span>Sonido</span><span>Ejemplo</span>
+      </div>
+      <div class="pron-row"><span class="letter">A</span><span class="sound">[a]</span><span>la, chat — como "casa"</span></div>
+      <div class="pron-row"><span class="letter">AI/EI</span><span class="sound">[e]</span><span>lait, neige — como "mesa"</span></div>
+      <div class="pron-row"><span class="letter">AU/EAU</span><span class="sound">[o]</span><span>aussi, eau — como "sol"</span></div>
+      <div class="pron-row"><span class="letter">EU</span><span class="sound">[ø]</span><span>feu, bleu — entre e/o, labios redondeados</span></div>
+      <div class="pron-row"><span class="letter">OI</span><span class="sound">[wa]</span><span>moi, voix — siempre [wa]</span></div>
+      <div class="pron-row"><span class="letter">OU</span><span class="sound">[u]</span><span>ou, vous — [u] cerrada</span></div>
+      <div class="pron-row"><span class="letter">U</span><span class="sound">[y]</span><span>tu, lune — como "i" con labios en "o"</span></div>
+      <div class="pron-row"><span class="letter">AN/EN</span><span class="sound">[ã]</span><span>an, enfant — nasal, sin N separada</span></div>
+      <div class="pron-row"><span class="letter">ON</span><span class="sound">[õ]</span><span>on, nombre — nasal</span></div>
+      <div class="pron-row"><span class="letter">IN/AIN</span><span class="sound">[ɛ̃]</span><span>vin, pain — nasal</span></div>
+    </div>
+    <div class="card">
+      <h3>Consonnes diferentes del español</h3>
+      <div class="pron-row" style="font-size:0.72rem;font-weight:600;color:var(--muted)">
+        <span>Letra</span><span>Sonido</span><span>Ejemplo</span>
+      </div>
+      <div class="pron-row"><span class="letter">C+e/i</span><span class="sound">[s]</span><span>merci, ceci</span></div>
+      <div class="pron-row"><span class="letter">C+a/o</span><span class="sound">[k]</span><span>café, comment</span></div>
+      <div class="pron-row"><span class="letter">CH</span><span class="sound">[ʃ]</span><span>chat, chaise</span></div>
+      <div class="pron-row"><span class="letter">G+e/i</span><span class="sound">[ʒ]</span><span>genre, girafe</span></div>
+      <div class="pron-row"><span class="letter">GN</span><span class="sound">[ɲ]</span><span>champagne</span></div>
+      <div class="pron-row"><span class="letter">H</span><span class="sound">mudo</span><span>hôtel, homme</span></div>
+      <div class="pron-row"><span class="letter">J</span><span class="sound">[ʒ]</span><span>je, bonjour</span></div>
+      <div class="pron-row"><span class="letter">QU</span><span class="sound">[k]</span><span>que, qui</span></div>
+      <div class="pron-row"><span class="letter">R</span><span class="sound">gutural</span><span>rouge, Paris</span></div>
+      <div class="pron-row"><span class="letter">S (entre V)</span><span class="sound">[z]</span><span>maison, rose</span></div>
+    </div>
+  </div>
+  <div class="callout" style="margin-top:1rem">
+    <strong>Liaison</strong> — encadenamiento de palabras<br>
+    <span style="font-size:0.82rem">
+      <code>les amis</code> → [le-za-mi] · <code>vous avez</code> → [vu-za-ve] · <code>les enfants</code> → [le-zan-fan]<br>
+      <em>Jamás</em> liaison con <code>et</code> + vocal, ni con h aspirada (<code>les haricots</code> sin enlace).
+    </span>
+  </div>
+</section>
+
+<!-- ─── 15. NÉGATION ─── -->
+<section id="negation">
+  <div class="section-header">
+    <span class="section-number">15</span>
+    <h2>La négation</h2>
+  </div>
+  <div class="rule-box">
+    <p><strong>Regla de oro:</strong> el verbo se coloca <em>entre</em> <code>ne</code> y <code>pas</code></p>
+    <p><em>Je mange.</em> → <em>Je ne mange pas.</em> &nbsp;|&nbsp; <em>J'aime.</em> → <em>Je n'aime pas.</em></p>
+  </div>
+  <div class="tbl-wrap" style="margin-top:1rem">
+    <table>
+      <thead><tr><th>Forma</th><th>Sentido</th><th>Afirmativo</th><th>Negativo</th></tr></thead>
+      <tbody>
+        <tr><td class="fr">ne … pas</td><td>no</td><td class="es">Je mange.</td><td class="fr">Je ne mange pas.</td></tr>
+        <tr><td class="fr">ne … jamais</td><td>nunca</td><td class="es">Je mange toujours.</td><td class="fr">Je ne mange jamais.</td></tr>
+        <tr><td class="fr">ne … plus</td><td>ya no</td><td class="es">Je travaille encore.</td><td class="fr">Je ne travaille plus.</td></tr>
+        <tr><td class="fr">ne … rien</td><td>nada</td><td class="es">Je vois quelque chose.</td><td class="fr">Je ne vois rien.</td></tr>
+        <tr><td class="fr">ne … personne</td><td>nadie</td><td class="es">Je vois quelqu'un.</td><td class="fr">Je ne vois personne.</td></tr>
+        <tr><td class="fr">ne … que</td><td>solo</td><td class="es">J'ai beaucoup d'amis.</td><td class="fr">Je n'ai qu'un ami.</td></tr>
+        <tr><td class="fr">ne … pas encore</td><td>todavía no</td><td class="es">Il est arrivé.</td><td class="fr">Il n'est pas encore arrivé.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout" style="margin-top:0.75rem">
+    <strong>Negación con artículos:</strong> <code>un/du/de la/des → de</code> en frases negativas<br>
+    <span style="font-size:0.82rem">
+      <em>J'ai un chien.</em> → <em>Je n'ai pas de chien.</em><br>
+      <em>Je mange du pain.</em> → <em>Je ne mange pas de pain.</em><br>
+      <strong>Excepción ÊTRE:</strong> <em>Ce n'est pas un chien.</em> (el artículo no cambia)
+    </span>
+  </div>
+</section>
+
+<!-- ─── 16. PRÉPOSITIONS ─── -->
+<section id="prepositions">
+  <div class="section-header">
+    <span class="section-number">16</span>
+    <h2>Prépositions essentielles</h2>
+    <span class="section-subtitle">lieu · temps · pays</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Prép.</th><th>Sentido</th><th>Ejemplo</th><th>Español</th></tr></thead>
+      <tbody>
+        <tr><td class="fr">à</td><td>en / a</td><td><em>Je suis à Paris.</em></td><td class="es">Estoy en París.</td></tr>
+        <tr><td class="fr">de</td><td>de / desde</td><td><em>Je viens de Lyon.</em></td><td class="es">Vengo de Lyon.</td></tr>
+        <tr><td class="fr">en</td><td>en (país, medio)</td><td><em>Je vis en France.</em></td><td class="es">Vivo en Francia.</td></tr>
+        <tr><td class="fr">dans</td><td>dentro de</td><td><em>Le chat est dans la boîte.</em></td><td class="es">El gato está dentro de la caja.</td></tr>
+        <tr><td class="fr">sur</td><td>sobre</td><td><em>Le livre est sur la table.</em></td><td class="es">El libro está sobre la mesa.</td></tr>
+        <tr><td class="fr">sous</td><td>bajo</td><td><em>Le chat est sous le lit.</em></td><td class="es">El gato está bajo la cama.</td></tr>
+        <tr><td class="fr">devant / derrière</td><td>delante / detrás</td><td><em>Il attend devant l'école.</em></td><td class="es">Espera delante de la escuela.</td></tr>
+        <tr><td class="fr">entre</td><td>entre</td><td><em>Il est entre toi et moi.</em></td><td class="es">Está entre tú y yo.</td></tr>
+        <tr><td class="fr">près de / loin de</td><td>cerca / lejos de</td><td><em>J'habite près du parc.</em></td><td class="es">Vivo cerca del parque.</td></tr>
+        <tr><td class="fr">chez</td><td>en casa de / en el lugar de</td><td><em>chez Marie, chez le médecin</em></td><td class="es">en casa de Marie</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="rule-box" style="margin-top:1rem">
+    <p><strong>À / EN / DANS — la confusión más común</strong></p>
+    <p><code>À</code> → ciudad, punto preciso, hora: <em>à Paris · à l'école · à 8h</em></p>
+    <p><code>EN</code> → país femenino, año, mes, estación, medio de transporte: <em>en France · en 2024 · en voiture</em></p>
+    <p><code>DANS</code> → espacio físico, tiempo futuro aprox.: <em>dans la voiture · dans 5 minutes</em></p>
+  </div>
+  <div class="grid-2" style="margin-top:1rem">
+    <div class="card">
+      <h3>Países <span class="tag tag-warn">avec article</span></h3>
+      <div class="phrase-pair"><span class="phrase-fr">País femenino</span><span class="phrase-es">en/de — en France, en Espagne</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">País masculino</span><span class="phrase-es">au/du — au Mexique, au Canada</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">País plural</span><span class="phrase-es">aux/des — aux États-Unis</span></div>
+      <div class="callout" style="margin-top:0.5rem;font-size:0.78rem"><strong>Truco:</strong> Casi todos los países en –e son femeninos: France, Espagne, Italie, Chine… Excepción: <em>le Mexique</em>.</div>
+    </div>
+    <div class="card">
+      <h3>Ciudades <span class="tag tag-warn">sans article</span></h3>
+      <div class="phrase-pair"><span class="phrase-fr">Ir a / estar en</span><span class="phrase-es">à — à Paris, à Madrid</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Venir de</span><span class="phrase-es">de — de Paris, de Madrid</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Excepción masc.</span><span class="phrase-es">au — au Havre, au Caire</span></div>
+      <div class="phrase-pair"><span class="phrase-fr">Excepción fém.</span><span class="phrase-es">à la — à La Haye</span></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <strong>Français de Base</strong> · Guide d'étude · Niveau débutant<br>
+  Bonne chance dans ton apprentissage ! ¡Buena suerte en tu aprendizaje du français!
+</footer>
+
+</body>
+</html>

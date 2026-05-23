@@ -1,0 +1,9 @@
+base_url = "https://juanandhisbot.github.io/random"
+title = "Français de Base"
+description = "Guide d'étude · Niveau débutant · Referencia para hispanohablantes"
+compile_sass = false
+minify_html = false
+generate_feeds = false
+
+[markdown]
+highlight_code = false
