@@ -1,0 +1,72 @@
+%%{init: {'theme': 'dark'}}%%
+erDiagram
+  users {
+    text id "HMAC(email, PEPPER)"
+    text pubkey "X25519 public key"
+    text fingerprint "hash of pubkey"
+    text encrypted_privkey "wrapped with Argon2(password)"
+  }
+  invites {
+    text token "random 256-bit"
+    text workspace_id
+    text invited_by "fingerprint"
+    timestamp expires_at
+    bool claimed
+  }
+  workspaces {
+    text id
+    text ciphertext "encrypted name etc"
+    text signed_by "fingerprint"
+    json keys "fp → encrypted DEK"
+  }
+  initiatives {
+    text id
+    text workspace_id
+    text ciphertext "encrypted name start end"
+    json keys "fp → encrypted DEK"
+  }
+  epics {
+    text id
+    text initiative_id
+    text workspace_id
+    text ciphertext "encrypted name start end"
+    json keys "fp → encrypted DEK"
+  }
+  boards {
+    text id
+    text workspace_id
+    text ciphertext "encrypted name"
+    json keys "fp → encrypted DEK"
+  }
+  columns {
+    text id
+    text board_id
+    int position "PLAINTEXT for ordering"
+    text ciphertext "encrypted name"
+    json keys "fp → encrypted DEK"
+  }
+  cards {
+    text id
+    text workspace_id "PLAINTEXT for queries"
+    text column_id "PLAINTEXT for board"
+    text epic_id "PLAINTEXT FK"
+    int position "PLAINTEXT for ordering"
+    text ciphertext "title description dates labels checklist github_refs"
+    text signed_by "fingerprint"
+    json keys "fp → encrypted DEK"
+  }
+  comments {
+    text id
+    text card_id "PLAINTEXT FK"
+    text ciphertext "encrypted body"
+    text signed_by "fingerprint"
+    json keys "fp → encrypted DEK"
+  }
+
+  workspaces ||--o{ initiatives : "has"
+  workspaces ||--o{ boards : "has"
+  initiatives ||--o{ epics : "has"
+  epics ||--o{ cards : "belongs to"
+  boards ||--o{ columns : "has"
+  columns ||--o{ cards : "contains"
+  cards ||--o{ comments : "has"

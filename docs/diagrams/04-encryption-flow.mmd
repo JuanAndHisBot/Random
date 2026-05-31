@@ -1,0 +1,29 @@
+%%{init: {'theme': 'dark'}}%%
+sequenceDiagram
+  participant B as 🌐 Browser (Alice)
+  participant S as ⚙️ Server
+
+  rect rgb(20, 30, 50)
+    Note over B,S: ── WRITING A CARD ──
+    B->>B: 1. generate random DEK (256-bit)
+    B->>B: 2. ciphertext = AES-256-GCM(payload, DEK)
+    Note left of B: payload = title, description (Markdown),<br/>start_date, due_date, priority,<br/>assignees, labels, checklist,<br/>github_refs
+    B->>B: 3. enc_DEK[alice_fp] = OpenPGP.encrypt(DEK, alice_pub)
+    B->>B: 3. enc_DEK[bob_fp]   = OpenPGP.encrypt(DEK, bob_pub)
+    B->>B: 4. signature = OpenPGP.sign(ciphertext, alice_priv)
+    B->>S: POST /cards { workspace_id, column_id, position,<br/>ciphertext, signed_by, signature,<br/>keys: { alice_fp: …, bob_fp: … } }
+    Note right of S: Stores opaque blob<br/>Knows: workspace · column · position<br/>Does NOT know: any content
+  end
+
+  rect rgb(20, 40, 35)
+    Note over B,S: ── READING THE BOARD ──
+    B->>S: GET /workspaces/ws_abc/cards
+    S-->>B: [ { id, column_id, position, ciphertext, signed_by, keys } ]
+    loop for each card
+      B->>B: enc_DEK = keys[my_fingerprint]
+      B->>B: DEK = OpenPGP.decrypt(enc_DEK, my_priv)
+      B->>B: payload = AES-256-GCM-decrypt(ciphertext, DEK)
+      B->>B: ✓ verify signature with pubkeys[signed_by]
+      B->>B: render card on board
+    end
+  end

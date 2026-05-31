@@ -1,0 +1,21 @@
+%%{init: {'theme': 'dark'}}%%
+flowchart TD
+  A["👆 User opens card detail"] --> B["🔓 Decrypt payload"]
+  B --> C{"github_refs\nin payload?"}
+  C -- No --> D["Render card\nnormally"]
+  C -- Yes --> E["Check localStorage\nETag cache"]
+  E --> F{"Cache hit?"}
+
+  F -- Yes --> G["GET api.github.com\nIf-None-Match: etag"]
+  G --> H{"304 Not\nModified?"}
+  H -- "✓ Yes\n(resource unchanged)" --> I["Use cached data\n💚 0 tokens spent"]
+  H -- "↺ No\n(resource changed)" --> J["Update cache\nnew ETag + data"]
+
+  F -- No --> K["GET api.github.com\n(no auth header needed\nfor public repos)"]
+  K --> L["Store ETag + data\nin localStorage"]
+
+  I --> M["Render inline in card:\n⬡ merged  #142  Add Stripe SDK\nfeat/stripe → main · @alice · 2d ago"]
+  J --> M
+  L --> M
+
+  N["🚫 Board view"] --> O["No GitHub calls\nBoard stays fast"]

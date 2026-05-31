@@ -1,0 +1,29 @@
+%%{init: {'theme': 'dark'}}%%
+sequenceDiagram
+  participant A as 👩 Alice (member)
+  participant S as ⚙️ Server
+  participant B as 👨 Bob (new)
+
+  A->>S: POST /invites { workspace_id }
+  S->>S: generate one-time token
+  S-->>A: { token }
+  Note over A,B: Alice shares link out-of-band (Slack, email, etc.)
+  Note over A,B: https://app/invite#token  (token in fragment, never logged)
+
+  B->>S: POST /users { pubkey, bob_fp, encrypted_privkey }
+  Note right of S: Bob registers — no email stored
+  S-->>B: 201 OK
+
+  B->>S: POST /invites/claim { token, bob_fp }
+  S->>S: validate token
+  S->>A: 🔔 notify: bob_fp wants to join
+
+  loop For each workspace card + workspace blob
+    A->>A: DEK = decrypt(keys[alice_fp], alice_priv)
+    A->>A: enc_DEK_bob = encrypt(DEK, bob_pub)
+    A->>S: PATCH /cards/{id}/keys { bob_fp: enc_DEK_bob }
+  end
+
+  Note over B,S: Bob can now decrypt all existing cards
+  Note right of S: Server never learned Bob's email
+  Note right of S: Server sees bob_fp has workspace access

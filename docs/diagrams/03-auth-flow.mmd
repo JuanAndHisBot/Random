@@ -1,0 +1,35 @@
+%%{init: {'theme': 'dark'}}%%
+sequenceDiagram
+  participant B as 🌐 Browser
+  participant S as ⚙️ Server
+
+  rect rgb(20, 40, 35)
+    Note over B,S: ── REGISTRATION ──
+    B->>B: generate keypair (alice_pub / alice_priv)
+    B->>B: wrap_key = Argon2(password)
+    B->>B: encrypted_priv = encrypt(alice_priv, wrap_key)
+    B->>S: POST /users { email, pubkey, fingerprint, encrypted_privkey }
+    S->>S: user_id = HMAC(email, SERVER_PEPPER)
+    S->>S: store { user_id, pubkey, fingerprint, encrypted_privkey }
+    Note right of S: ✓ email discarded — never stored
+    S-->>B: 201 OK
+  end
+
+  rect rgb(20, 30, 50)
+    Note over B,S: ── LOGIN ──
+    B->>S: POST /auth/init { email }
+    S->>S: HMAC(email, PEPPER) → lookup record
+    S-->>B: { encrypted_privkey, challenge: random_bytes }
+    B->>B: privkey = decrypt(encrypted_privkey, Argon2(password))
+    B->>B: sig = sign(challenge, privkey)
+    B->>S: POST /auth/verify { fingerprint, sig }
+    S->>S: verify(sig, challenge, pubkey) ✓
+    S-->>B: { jwt }
+  end
+
+  rect rgb(50, 25, 25)
+    Note over B,S: ── ACCOUNT RECOVERY (admin resets a friend) ──
+    Note over B,S: Admin generates new invite link → friend re-registers
+    Note over B,S: New keypair generated → admin re-encrypts all workspace DEKs
+    Note over B,S: Old content readable · Old signatures show "key changed"
+  end
