@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Progress - Daily Learning{% endblock %}
+
+{% block content %}
+<div class="progress-container">
+    <h2>📊 Learning Progress</h2>
+
+    <!-- Statistics -->
+    <div class="stats-box">
+        <div class="stat-item">
+            <div class="stat-value">{{ stats.completed_modules }}/{{ stats.total_modules }}</div>
+            <div class="stat-label">Modules Completed</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ "%.1f"|format(stats.completion_percentage) }}%</div>
+            <div class="stat-label">Completion Rate</div>
+        </div>
+    </div>
+
+    <!-- Completed Modules -->
+    <section class="completed-modules">
+        <h3>Completed Modules</h3>
+
+        {% if modules %}
+        <div class="modules-progress">
+            {% for module in modules %}
+            <div class="module-progress-item {% if module.is_completed %}completed{% else %}pending{% endif %}">
+                <div class="progress-item-header">
+                    <span class="topic-name">{{ module.topic }}</span>
+                    <span class="module-date">{{ module.date.strftime('%b %d, %Y') }}</span>
+                </div>
+                <div class="progress-item-status">
+                    {% if module.is_completed %}
+                    <span class="badge completed">✓ Completed</span>
+                    {% else %}
+                    <span class="badge pending">○ Not Started</span>
+                    {% endif %}
+                </div>
+                <div class="progress-item-actions">
+                    <a href="{{ url_for('main.module_detail', module_date=module.date.isoformat()) }}" class="btn-small">
+                        {% if module.is_completed %}Revisit{% else %}Start{% endif %}
+                    </a>
+                    {% if module.is_completed %}
+                    <button class="btn-small" onclick="reviewModule('{{ module.date.isoformat() }}')">
+                        Review
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-text">No modules yet. Start your learning journey today!</p>
+        {% endif %}
+    </section>
+</div>
+
+<script>
+function reviewModule(moduleDate) {
+    fetch(`/api/module/${moduleDate}/review`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Review data:', data);
+            // Display review modal or navigate to review view
+            alert('Review feature coming soon!');
+        })
+        .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

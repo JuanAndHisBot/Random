@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}{{ module.topic }} - Daily Learning{% endblock %}
+
+{% block content %}
+<div class="module-container">
+    <div class="module-header">
+        <h2>{{ module.topic }}</h2>
+        <p class="module-date">{{ module.date.strftime('%B %d, %Y') }}</p>
+    </div>
+
+    <div class="module-content">
+        <!-- Theory Overview Section -->
+        <section class="theory-section">
+            <h3>📖 Theory Overview</h3>
+            <details class="collapsible">
+                <summary>Click to expand</summary>
+                <div class="theory-content">
+                    {{ module.theory_overview }}
+                </div>
+            </details>
+        </section>
+
+        <!-- Code Examples Section -->
+        {% if module.code_examples %}
+        <section class="code-section">
+            <h3>💻 Code Examples</h3>
+            <details class="collapsible">
+                <summary>Click to expand</summary>
+                <div class="code-content">
+                    {% for example in module.code_examples %}
+                    <div class="code-example">
+                        <div class="code-header">
+                            <span class="code-title">{{ example.title }}</span>
+                            <span class="code-language">{{ example.language }}</span>
+                        </div>
+                        <pre><code>{{ example.code }}</code></pre>
+                    </div>
+                    {% endfor %}
+                </div>
+            </details>
+        </section>
+        {% endif %}
+
+        <!-- Socratic Dialogue Section -->
+        <section class="socratic-section">
+            <h3>🤔 Socratic Dialogue</h3>
+            <p class="progress-indicator">
+                <span id="progress-text">Question 1 of {{ module.socratic_questions|length }}</span>
+            </p>
+
+            <div id="socratic-container">
+                <!-- Questions will be rendered here by JavaScript -->
+            </div>
+
+            <div id="completion-message" style="display: none;">
+                <div class="completion-box">
+                    <h4>✓ Module Complete!</h4>
+                    <p>You've completed all {{ module.socratic_questions|length }} Socratic questions.</p>
+                    <button onclick="showReview()">Review Answers</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Review Section (hidden by default) -->
+        <section id="review-section" style="display: none;">
+            <h3>📋 Review Your Answers</h3>
+            <div id="review-content"></div>
+            <button onclick="goBackToModule()">Continue Learning</button>
+        </section>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initializeModule({
+        moduleDate: '{{ module.date.isoformat() }}',
+        totalQuestions: {{ module.socratic_questions|length }},
+        userAnswers: {{ user_answers|tojson }},
+    });
+});
+</script>
+{% endblock %}

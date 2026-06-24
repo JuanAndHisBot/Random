@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Archive - Daily Learning{% endblock %}
+
+{% block content %}
+<div class="archive-container">
+    <h2>📚 Learning Archive</h2>
+
+    {% if modules %}
+    <div class="modules-list">
+        {% for module in modules %}
+        <div class="module-card">
+            <div class="module-card-header">
+                <h3>{{ module.topic }}</h3>
+                <span class="module-date">{{ module.date.strftime('%b %d, %Y') }}</span>
+            </div>
+            <div class="module-card-body">
+                <p>{{ module.theory_overview[:100] }}...</p>
+            </div>
+            <div class="module-card-footer">
+                <a href="{{ url_for('main.module_detail', module_date=module.date.isoformat()) }}" class="btn-primary">
+                    View Module
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No modules yet. Check back tomorrow for the first daily lesson!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

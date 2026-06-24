@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}No Module - Daily Learning{% endblock %}
+
+{% block content %}
+<div class="no-module-container">
+    <div class="empty-state">
+        <h2>📭 No Module for {{ date.strftime('%B %d, %Y') }}</h2>
+        <p>Check back tomorrow for a new learning module!</p>
+
+        <div class="empty-actions">
+            <a href="{{ url_for('main.archive') }}" class="btn-primary">Browse Archive</a>
+            <a href="{{ url_for('main.progress') }}" class="btn-primary">View Progress</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
